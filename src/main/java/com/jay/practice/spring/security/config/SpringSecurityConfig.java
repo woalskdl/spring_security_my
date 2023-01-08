@@ -29,10 +29,13 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         // basic authentication
         http.httpBasic().disable(); // basic authentication filter 비활성화
-        // csrf
+//        http.httpBasic(); // basic authentication filter 활성화
+        // csrf / 인증 받은 페이지인지 확인할 수 있는 토큰 / Thymeleaf에서 자동으로 제공해준다.
         http.csrf();
-        // remember-me
+        // remember-me / 기본 설정은 2주 - 장시간 유지되는 remember-me cookie 가 생성된다. / 서버를 재시작할 경우 쿠키는 유실된다.
         http.rememberMe();
+        // anonymous - 인증되지 않은 사용자에 대해 익명의 토큰을 발급
+        http.anonymous();
         // authorization
         http.authorizeRequests()
                 // /와 /home은 모두에게 허용
@@ -59,6 +62,10 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         // 정적 리소스 spring security 대상에서 제외
 //        web.ignoring().antMatchers("/images/**", "/css/**"); // 아래 코드와 같은 코드입니다.
         web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+
+//        아래 내용은 현재 코드와 유사하나 filter 자체를 통과하나 안하냐의 차이이므로 성능에서 차이가 있다.
+//        http.authorizeRequests()
+//                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll();
     }
 
     /**
